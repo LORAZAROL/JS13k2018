@@ -1,0 +1,430 @@
+<!Doctype html>
+<html>
+       
+<body>
+    <canvas id="mycanvas" width="1200" height="680" style="border:1px solid #000000;"> </canvas>
+    <script>
+        //Cnavas and Elements Intialization
+        var canvas=document.getElementById('mycanvas');
+        var c=canvas.getContext("2d");
+        var count=0;
+        var currentObject=0;
+        var index=0;
+        
+        //Menu Screen Animaiton
+        function blackBoxFlash(){
+           index=1;
+           var i, rectWidth=40,rectHeight=40,x,y;
+           var id=setInterval(newBoxAppear,15);
+           function newBoxAppear(){
+                if(count>=2300){
+                    c.fillRect(0,0,1200,680);
+                    clearInterval(id);
+                }else{
+                    for(i=0;i<15;i++){
+                      x=40*Math.floor(Math.random()*30);
+                      y=40*Math.floor(Math.random()*17);
+                      c.fillStyle ="Black";
+                      c.fillRect(x,y,rectWidth,rectHeight);
+                      count++;
+                    }  
+                }
+            }
+        }
+
+        var text={
+            title:"Summon Jekyll",
+            start: function(){c.font = "60px Courier New Bold";
+                              c.fillStyle="#993399";
+                              c.fillText(this.title,425,350);
+                              c.font = "60px Courier New Bold";
+                              c.fillStyle="#b3ecff";
+                              c.fillText(this.title,425+3,350+3);},
+            animation:function (){
+                        text.start();
+                        document.body.insertBefore(canvas, document.body.childNodes[0]);
+                        this.interval=setInterval(update,100);
+
+                    },
+            stop: function(){
+                clearInterval(this.interval);
+            }
+        }
+        function update(){
+                        if(count%4==0)
+                            c.clearRect(425,308,380,58);
+                        if(count%7==0)
+                            text.start();         
+                        count++;
+                        }
+        function drawCircle(){
+            c.fillStyle= "White";
+            c.beginPath();
+            c.arc(600,340,250,0,2*Math.PI,true); 
+            c.closePath();
+            c.fill();
+        }
+        function clearStartScreen(){
+            c.clearRect(0,0,1200,680);
+            canvas.removeEventListener("click",clearStartScreen);
+            level1GameArea.init();
+            
+        }
+        function clickStart(){
+            c.fillStyle="Black";
+            var text="Click To Start";
+            c.font = "25px Courier New Bold";
+            c.fillText(text,530,493);     
+
+        }
+
+        //GamePlay Section
+        var currentObject;
+        var vertical_1=new lightComponent(1,4,false,3,300,40);
+        var vertical_2=new normalComponent(1,4,false,600,240);
+        var horizontal_1=new normalComponent(3,1,true,200,440);
+        var level1GameArea={
+            key:0,
+            init:function (){
+                c.fillStyle="Black";
+                c.fillRect(0,0,1200,680);
+                c.fillStyle="White";
+                c.beginPath();
+                c.moveTo(980,0);
+                c.lineTo(950,680);
+                c.closePath();
+                c.strokeStyle="White";
+                c.stroke();
+                c.fillStyle="White";
+                c.fillText("Level 1",1120,340);
+                c.beginPath();
+                c.moveTo(1200,240);
+                c.lineTo(1100,340);
+                c.lineTo(1200,440);
+                c.strokeStyle="White";
+                c.stroke();
+                for(var i=0;i<6;i++){
+                    for(var j=0;j<6;j++)
+                    c.fillRect(200+100*i,40+100*j,97,97);
+                }
+                canvas.addEventListener("click",function(e){
+                    var x=e.clientX;
+                    var y=e.clientY;
+                    if((x>=vertical_1.x&&x<=vertical_1.x+vertical_1.width)&&(y>=vertical_1.y&&y<=vertical_1.y+vertical_1.height))
+                        currentObject=1;
+                    if((x>=vertical_2.x&&x<=vertical_2.x+vertical_2.width)&&(y>=vertical_2.y&&y<=vertical_2.y+vertical_2.height))
+                        currentObject=2;
+                    if((x>=horizontal_1.x&&x<=horizontal_1.x+horizontal_1.width)&&(y>=horizontal_1.y&&y<=horizontal_1.y+horizontal_1.height))
+                        currentObject=3;
+                    console.log("x: "+x+"y: "+y+"Block: "+currentObject);
+                });
+                window.addEventListener("keydown",function(e){level1GameArea.key=e.keyCode;level1GameArea.key2=true;});
+                window.addEventListener("keyup",function(e){level1GameArea.key2=false;});
+                this.interval=setInterval(updateGame,80);
+            },
+            clear: function (levelNum){
+            c.clearRect(0,0,1200,680);
+                c.fillStyle="Black";
+                c.fillRect(0,0,1200,680);
+                c.fillRect(300,440,97,97);
+                c.fillStyle="White";
+                c.beginPath();
+                c.moveTo(950,0);
+                c.lineTo(950,680);
+                c.strokeStyle="White";
+                c.stroke();
+                c.fillStyle="White";
+                c.fillText("Level 1",1120,340);
+                c.fillText("Hole",1052,90);
+                c.fillText("(  2  ,  5  )",1030,120);
+                c.beginPath();
+                c.moveTo(1200,200);
+                c.lineTo(1060,340);
+                c.lineTo(1200,480);
+                c.strokeStyle="White";
+                c.stroke();
+                for(var i=0;i<6;i++){
+                    for(var j=0;j<6;j++)
+                    c.fillRect(200+100*i,40+100*j,97,97);
+                }
+                c.fillStyle="Black";
+                c.fillRect(300,440,97,97);
+            },
+            isCompleted:function(){
+                if(vertical_1.y==240) return true;
+                return false;
+            },
+            stop:function(){
+                clearInterval(this.interval);
+                console.log(this.interval);
+            },
+        }
+        
+
+        var vertical_2_1=new normalComponent(1,2,false,200,340);
+        var vertical_2_2=new lightComponent(1,3,false,3,400,140);
+        var vertical_2_3=new normalComponent(1,2,false,700,440);
+        var horizontal_2_1=new normalComponent(3,1,true,500,340);
+        var horizontal_2_2=new normalComponent(3,1,true,300,440);
+        var horizontal_2_3=new normalComponent(3,1,true,400,540);
+        var level2GameArea={
+            init:function (){
+                c.fillStyle="Black";
+                c.fillRect(0,0,1200,680);
+                c.fillStyle="White";
+                c.beginPath();
+                c.moveTo(980,0);
+                c.lineTo(980,680);
+                c.closePath();
+                c.strokeStyle="White";
+                c.stroke();
+                c.fillStyle="White";
+                c.fillText("Level 2",1120,340);
+                c.beginPath();
+                c.moveTo(1200,200);
+                c.lineTo(1060,340);
+                c.lineTo(1200,480);
+                c.strokeStyle="White";
+                c.stroke();
+                for(var i=0;i<6;i++){
+                    for(var j=0;j<6;j++)
+                    c.fillRect(200+100*i,40+100*j,97,97);
+                }
+                canvas.addEventListener("click",function(e){
+                    var x=e.clientX;
+                    var y=e.clientY;
+                    if(inside(x,y,vertical_2_1))
+                        currentObject=1;
+                    if(inside(x,y,vertical_2_2))
+                        currentObject=2;
+                    if(inside(x,y,vertical_2_3))
+                        currentObject=3;
+                    if(inside(x,y,horizontal_2_1))
+                        currentObject=4;
+                    if(inside(x,y,horizontal_2_2))
+                        currentObject=5;
+                    if(inside(x,y,horizontal_2_3))
+                        currentObject=6;
+                    console.log("x: "+x+"y: "+y+"Block: "+currentObject);
+                });
+                window.addEventListener("keydown",function(e){level1GameArea.key=e.keyCode;level1GameArea.key2=true;});
+                window.addEventListener("keyup",function(e){level1GameArea.key2=false;});
+                this.id=setInterval(updateGame2,80);
+            
+                
+                
+            },
+            stop:function(){
+                clearInterval(this.interval);
+            },
+        }
+
+        function clearLevelCanvas(levelNum){
+            c.clearRect(0,0,1200,680);
+                c.fillStyle="Black";
+                c.fillRect(0,0,1200,680);
+                c.fillRect(300,440,97,97);
+                c.fillStyle="White";
+                c.beginPath();
+                c.moveTo(950,0);
+                c.lineTo(950,680);
+                c.strokeStyle="White";
+                c.stroke();
+                c.fillStyle="White";
+                c.fillText("Level 1",1120,340);
+                c.fillText("Hole",1052,90);
+                c.fillText("(  2  ,  5  )",1030,120);
+                c.beginPath();
+                c.moveTo(1200,200);
+                c.lineTo(1060,340);
+                c.lineTo(1200,480);
+                c.strokeStyle="White";
+                c.stroke();
+                for(var i=0;i<6;i++){
+                    for(var j=0;j<6;j++)
+                    c.fillRect(200+100*i,40+100*j,97,97);
+                }
+                c.fillStyle="Black";
+                c.fillRect(300,440,97,97);
+        }
+
+        function inside(x,y,component){
+            if(component.x&&x<=component.x+component.width&&y>=component.y&&y<=component.y+component.height)
+                return true;
+            return false;
+        }
+        //Lightcomponent Section
+        function lightComponent(width,height,isHorizontal,lightPos,x,y){
+            if(isHorizontal){
+                this.width=100*width;
+                this.height=97;
+                this.x=x;
+                this.y=y;
+            }else{
+                this.width=97;
+                this.height=100*height-3;
+                this.x=x;
+                this.y=y;
+            }
+            this.update=function(){
+                c.fillStyle="#006080";
+                c.fillRect(this.x,this.y,this.width,this.height);
+                c.fillStyle= "#66dbff";
+                c.beginPath();
+                if(isHorizontal){
+                    c.arc(this.x+100*(lightPos-1)+48.5,this.y+48.5,30,0,2*Math.PI,true);
+                }else{
+                    c.arc(this.x+48.5,this.y+100*(lightPos-1)+48.5,30,0,2*Math.PI,true);
+                }
+                c.fill();
+                c.closePath();   
+                c.beginPath();
+                c.stokeStyle="#b3edff";
+                if(isHorizontal){
+                    c.arc(this.x+100*(lightPos-1)+48.5,this.y+48.5,38,0,2*Math.PI,true);
+                }else{
+                    c.arc(this.x+48.5,this.y+100*(lightPos-1)+48.5,38,0,2*Math.PI,true);
+                }
+                c.lineWidth=3.5;
+                c.stroke();
+                c.closePath();
+            }
+        }
+
+        //Normalcomponent
+        function normalComponent(width,height,isHorizontal,x,y){
+            if(isHorizontal){
+                this.width=100*width-3;
+                this.height=97;
+                this.x=x;
+                this.y=y;
+                this.style="#d1e0e0";
+            }else{
+                this.width=97;
+                this.height=100*height-3;
+                this.x=x;
+                this.y=y;
+                this.style="#006080";
+            }
+            this.update=function(){
+                c.fillStyle=this.style;
+                c.fillRect(this.x,this.y,this.width,this.height);
+            }
+        }
+
+
+        function updateGame(){
+            if(level1GameArea.isCompleted()){
+                alert("The first Piece of Doctor is summoned");
+                level1GameArea.stop();
+                level1GameArea.clear(1);
+                level2GameArea.init();
+                return;
+            }
+            level1GameArea.clear(1);
+            switch(currentObject){
+            case 1:{
+                if((!level1GameArea.key2)&&level1GameArea.key==38){
+                    if(vertical_1.y>=140&&(horizontal_1.x>vertical_1.x)){
+                        vertical_1.y -=100;}
+                    level1GameArea.key2=true;}
+                if((!level1GameArea.key2)&&level1GameArea.key==40){
+                    if(vertical_1.y<=140&&(horizontal_1.x>vertical_1.x)){
+                        vertical_1.y +=100;
+                    }
+                    level1GameArea.key2=true;}
+              }
+            case 2:{
+                if((!level1GameArea.key2)&&level1GameArea.key==38){
+                    if(vertical_2.y>=140){
+                        vertical_2.y -=100;}
+                    level1GameArea.key2=true;}
+                if((!level1GameArea.key2)&&level1GameArea.key==40){
+                    if(vertical_2.y<=140&&!isBlocked(vertical_2,horizontal_1,40)){
+                        vertical_2.y +=100;
+                    }
+                    level1GameArea.key2=true;}
+              }
+            case 3:{
+                if((!level1GameArea.key2)&&level1GameArea.key==37){
+                    if(horizontal_1.x>=300&&!isBlocked(horizontal_1,vertical_1,37)){
+                        horizontal_1.x -=100;}
+                    level1GameArea.key2=true;}
+                if((!level1GameArea.key2)&&level1GameArea.key==39){
+                    if(horizontal_1.x<=400&&!isBlocked(horizontal_1,vertical_2,39)){
+                        horizontal_1.x +=100;}
+                    level1GameArea.key2=true;}
+              }
+            }
+            vertical_1.update();
+            vertical_2.update();
+            horizontal_1.update();
+            
+        }
+
+        function updateGame2(){
+            switch(currentObject){
+            case 1:{
+                if((!level2GameArea.key2)&&level2GameArea.key==38){
+                    if(vertical_1.y>=140&&(horizontal_1.x>vertical_1.x)){
+                        vertical_1.y -=100;}
+                    level1GameArea.key2=true;}
+                if((!level1GameArea.key2)&&level1GameArea.key==40){
+                    if(vertical_1.y<=140&&(horizontal_1.x>vertical_1.x)){
+                        vertical_1.y +=100;
+                    }
+                    level1GameArea.key2=true;}
+              }
+            case 2:{
+                if((!level1GameArea.key2)&&level1GameArea.key==38){
+                    if(vertical_2.y>=140){
+                        vertical_2.y -=100;}
+                    level1GameArea.key2=true;}
+                if((!level1GameArea.key2)&&level1GameArea.key==40){
+                    if(vertical_2.y<=140&&!isBlocked(vertical_2,horizontal_1,40)){
+                        vertical_2.y +=100;
+                    }
+                    level1GameArea.key2=true;}
+              }
+            case 3:{
+                if((!level1GameArea.key2)&&level1GameArea.key==37){
+                    if(horizontal_1.x>=300&&!isBlocked(horizontal_1,vertical_1,37)){
+                        horizontal_1.x -=100;}
+                    level1GameArea.key2=true;}
+                if((!level1GameArea.key2)&&level1GameArea.key==39){
+                    if(horizontal_1.x<=400&&!isBlocked(horizontal_1,vertical_2,39)){
+                        horizontal_1.x +=100;}
+                    level1GameArea.key2=true;}
+              }
+            }
+            vertical_2_1.update();
+            vertical_2_2.update();
+            vertical_2_3.update();
+            horizontal_2_1.update();
+            horizontal_2_2.update();
+            horizontal_2_3.update();
+        }
+        
+        function isBlocked(component1,component2,key){
+            if(key==37&&component1.x-100>=component2.x&&component1.x-100<=component2.x+component2.width&&component1.y+component1.height<=component2.y+component2.height)
+                return true;
+            if(key==38&&component1.y>=140&&component1.y-100>=component2.y&&component1.x>=component2.x&&component1.x+component1.width<=component2.x+component2.width)
+                return true;
+            if(key==39&&component1.x+component1.width+100>=component2.x&&component1.x+component1.width+100<=component2.x+component2.width&&component1.y>=component2.y&&component1.y+component1.height<=component2.y+component2.height)
+                return true;
+            if(key==40&&component1.y+component1.height+100>=component2.y&&component1.x>=component2.x&&component1.x+component1.width<=component2.x+component2.width)
+                return true;
+            return false;
+        }
+
+
+        blackBoxFlash();
+        setTimeout(drawCircle,2800);
+        setTimeout(text.animation,2800);
+        setTimeout(text.stop,6700);
+        setTimeout(clickStart,7400);        
+        canvas.addEventListener("click",clearStartScreen);
+        
+    </script> 
+</body>
+</html>
